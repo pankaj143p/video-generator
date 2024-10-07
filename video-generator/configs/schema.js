@@ -18,7 +18,6 @@ export const users = pgTable("users", {
    id: serial('id').primaryKey(),
    name: varchar('name', 200).notNull(),
    email: varchar('email', 200).notNull(),
-   password: varchar('password', 200).notNull(),
    imageUrl: varchar('imageUrl', 200),
    subscription: boolean('subscription').$default(false),
 });
