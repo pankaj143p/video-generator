@@ -10,7 +10,7 @@ export const MenuData = [
        id:2,
        name:'Create New',
        icon: FileVideo,
-       link: '/create-new'
+       link: '/dashboard/create-new'
     },
     {
        id:3,
