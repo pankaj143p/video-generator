@@ -7,10 +7,10 @@ import { eq } from 'drizzle-orm';
 import React ,{ useEffect } from 'react';
 
 function Provider ({ children }) {
-    const { user } = useUser();
+    const {user}=useUser();
 
     useEffect(() => {
-        user && isNewUser();
+        user&&isNewUser();
     }, [user]);
 
     const isNewUser = async () => {
@@ -27,15 +27,14 @@ function Provider ({ children }) {
                 // subscription: false
             })
         }
-
     }
-    return (
-        <div>
+
+        return (
+            <div>
             {children}
         </div>
     );
 }
-
 export default Provider;
 
 // "use client"
