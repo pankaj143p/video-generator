@@ -1,10 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
 // next.config.js
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
     env: {
       CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     },
   };
   
-export default nextConfig;
+  export default nextConfig;
+  
