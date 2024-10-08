@@ -1,14 +1,16 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { UserButton } from "@clerk/nextjs";
+import { SignIn , UserButton} from "@clerk/nextjs";
+import Dashboard from "./dashboard/page";
 
 export default function Home() {
   return (
    <>
     <div className='text-red-300' >
       <h1>Video Generator</h1>
-      <Button variant="destructive">Hello Design</Button>
-      <UserButton></UserButton>
+     {/* <SignIn></SignIn> */}
+     {/* <Dashboard></Dashboard> */}
+     <UserButton/>
     </div>
    </>
   );

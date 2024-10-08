@@ -17,8 +17,8 @@ const nextConfig = {
       return [
         {
           source: '/',
-          destination: '/sign-in',  // Adjusted path to your sign-in page
-          permanent: false,
+          destination: '/dashboard',  // Adjusted path to your sign-in page
+          permanent: true,
         },
       ];
     },
