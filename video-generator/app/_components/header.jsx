@@ -8,7 +8,7 @@ const Header = () => {
   return (
     <div className='p-3 px-5 flex items-center justify-between shadow-md'>
       <div className='flex flex-row gap-2 items-center'>
-        <Image src={logo} width={40} height={40}></Image>
+        <Image src={logo} width={40} height={40} alt='logo'></Image>
         <h4 className='text-blue-800 font-bold text-2xl '>Video Generater</h4>
       </div>
       <div className='flex gap-3 items-center'>
