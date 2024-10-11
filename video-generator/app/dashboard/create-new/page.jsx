@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import SelectTopic from './_components/select-topic'
+import SelectStyle from './_components/selected-style'
 
 const CreateNew = () => {
 
@@ -19,6 +20,7 @@ const CreateNew = () => {
       <SelectTopic onUserSelect={onHandleInputChange} ></SelectTopic>
       
       {/*  styles for selection */} 
+      <SelectStyle></SelectStyle>
 
       {/* video duration  */}
       
