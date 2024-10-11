@@ -4,23 +4,23 @@ export const StypeOptions = [
 		image : '/realistic.jpg'
 	},
 	{
-		name : 'Realistic',
+		name : 'environment',
 		image : '/realistic.jpg'
 	},
 	{
-		name : 'Realistic',
+		name : 'Study',
 		image : '/realistic.jpg'
 	},
 	{
-		name : 'Realistic',
+		name : 'Local',
 		image : '/realistic.jpg'
 	},
 	{
-		name : 'Realistic',
+		name : 'Real',
 		image : '/realistic.jpg'
 	},
 	{
-		name : 'Realistic',
+		name : 'Page',
 		image : '/realistic.jpg'
 	},
 ]

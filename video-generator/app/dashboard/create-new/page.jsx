@@ -20,7 +20,7 @@ const CreateNew = () => {
       <SelectTopic onUserSelect={onHandleInputChange} ></SelectTopic>
       
       {/*  styles for selection */} 
-      <SelectStyle></SelectStyle>
+      <SelectStyle onUserSelect={onHandleInputChange}></SelectStyle>
 
       {/* video duration  */}
       
