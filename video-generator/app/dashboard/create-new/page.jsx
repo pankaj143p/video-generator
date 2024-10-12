@@ -25,7 +25,12 @@ const CreateNew = () => {
 
       {/* video duration  */}
       <SelectDuration onUserSelect={onHandleInputChange}></SelectDuration>
+
       {/* create button for videos */}
+      <div className='mt-10'>
+        <button className='bg-teal-700 hover:bg-slate-900 text-white p-3 rounded-lg w-full'>Create New Video</button>
+        </div>
+
      </div>
     </div>
   )
