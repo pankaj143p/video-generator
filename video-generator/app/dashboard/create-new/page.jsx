@@ -20,9 +20,11 @@ const CreateNew = () => {
   }
   // get video script 
   
- const getVideoScript=()=>{
-  const prompt = 'Write a script to generate ' +formData.duration+ ' video on topic : ' +formData.topic+ ' with AI image prompt in '+formData.imagestyle+' format for each scene and give me result in JSON format with imagePrompt and content Text as field'
-  // const res = await axios.post('/api/get-video-script', {prompt : })
+ const getVideoScript = async () => {
+  const prompt = 'Write a script to generate ' + formData.duration + ' video on topic: ' + formData.topic + ' with AI image prompt in ' + formData.imagestyle + ' format for each scene and give me result in JSON format with imagePrompt and content Text as field';
+  const res = await axios.post('/api/get-video-script', { prompt : prompt }).then(resp=>{
+    console.log(resp.data);
+  });
   console.log(prompt);
  }
   return (
@@ -31,6 +33,7 @@ const CreateNew = () => {
      <h2 className='font-bold text-4xl text-blue-800 text-center'>Create New</h2>
      <div className='mt-10 shadow-md p-10'>
       {/*  topics selection  */}
+      
       <SelectTopic onUserSelect={onHandleInputChange} ></SelectTopic>
       
       {/*  styles for selection */} 
