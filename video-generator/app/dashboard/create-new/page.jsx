@@ -9,8 +9,10 @@ const CreateNew = () => {
   const [formData, setFormData] = useState([]);
   const onHandleInputChange=(fieldName, fieldValue)=>{
      console.log(fieldName,fieldValue);
-     
-
+     setFormData(prev=>({
+        ...prev,
+        [fieldName]:fieldValue
+     }))
   }
   return (
     <div className='md:px-20' >
