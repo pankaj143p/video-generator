@@ -14,7 +14,7 @@ const SelectStyle = ({onUserSelect}) => {
        <div className='grid grid-cols-2 md:grid-cols-3
             lg:grid-cols-5 xl:grid-cols-6 gap-5 m-3'>
         {StypeOptions.map((item,index)=>(
-            <div key={index} className={`relative text-center hover:scale-110 transition-all cursor-pointer rounded-lg
+            <div className={`relative text-center hover:scale-110 transition-all cursor-pointer rounded-lg
             ${selected==item.name && 'border-4 border-blue-800 border-rounded-lg'} `}>
                 <Image src={item.image} alt={item.name} width={100} height={100} className='w-full h-48 relative object-cover rounded-lg'
                     onClick={()=>{setSelected(item.name)

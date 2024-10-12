@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import SelectTopic from './_components/select-topic'
 import SelectStyle from './_components/selected-style'
+import SelectDuration from './_components/select-duration'
 
 const CreateNew = () => {
 
@@ -23,7 +24,7 @@ const CreateNew = () => {
       <SelectStyle onUserSelect={onHandleInputChange}></SelectStyle>
 
       {/* video duration  */}
-      
+      <SelectDuration onUserSelect={onHandleInputChange}></SelectDuration>
       {/* create button for videos */}
      </div>
     </div>
