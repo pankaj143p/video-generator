@@ -6,8 +6,8 @@ import SelectTopic from './_components/select-topic'
 import SelectStyle from './_components/selected-style'
 import SelectDuration from './_components/select-duration'
 import CustomLoading from './_components/custom-loading'
-import Button from '@/components/ui/button'
 import axios from 'axios'
+// import { v4 as uuidv4 } from 'uuid';
 
 const CreateNew = () => {
 
@@ -76,10 +76,29 @@ const CreateNew = () => {
     const res = await axios.post('/api/get-video-script', { prompt: prompt }).then(resp => {
       console.log(resp.data.res);
       setVideoScript(resp.data.res);
+      createAudioFile(resp.data.res);
     });
     setLoading(false);
   }
 
+  const createAudioFile=async(videoScript)=>{
+    let script='';
+   
+    videoScript.forEach(item=>{
+      script+=item.contentText;
+    })
+    // await axios.post('/api/get-audio-file',{
+    //   text : script,
+    //   id : id
+    // }).then(resp=>{
+    //   console.log(resp.data)
+    // })
+    // const res = axios.post('/api/get-audio-file', { text: text }).then(resp => {
+    //   console.log(text);
+    // });
+    console.log(script);
+    
+  }
   return (
     <div className='md:px-20' >
 
