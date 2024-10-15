@@ -52,15 +52,10 @@ const CreateNew = () => {
     const text = videoScript.map(scene => scene.contentText).join(' ');
     const utterance = new SpeechSynthesisUtterance(text);
 
-    // Find a female voice (based on language or gender)
     const femaleVoice = voices.find(voice => voice.name.includes('Female') || voice.lang.includes('en'));
-
-    // Set the voice if found
     if (femaleVoice) {
       utterance.voice = femaleVoice;
     }
-
-    // Start speech synthesis
     window.speechSynthesis.speak(utterance);
   }
 
@@ -81,24 +76,46 @@ const CreateNew = () => {
     setLoading(false);
   }
 
-  const createAudioFile=async(videoScript)=>{
-    let script='';
+  // const createAudioFile=async(videoScript)=>{
+  //   let script='';
    
-    videoScript.forEach(item=>{
-      script+=item.contentText;
-    })
-    // await axios.post('/api/get-audio-file',{
-    //   text : script,
-    //   id : id
-    // }).then(resp=>{
-    //   console.log(resp.data)
-    // })
-    // const res = axios.post('/api/get-audio-file', { text: text }).then(resp => {
-    //   console.log(text);
-    // });
-    console.log(script);
+  //   videoScript.forEach(item=>{
+  //     script+=item.contentText;
+  //   })
+  //   // await axios.post('/api/get-audio-file',{
+  //   //   text : script,
+  //   //   id : id
+  //   // }).then(resp=>{
+  //   //   console.log(resp.data)
+  //   // })
+  //   // const res = axios.post('/api/get-audio-file', { text: text }).then(resp => {
+  //   //   console.log(text);
+  //   // });
+  //   console.log(script);
     
-  }
+  // }
+  const createAudioFile = async (videoScript) => {
+    let script = '';
+  
+    videoScript.forEach(item => {
+      script += item.contentText + ' ';
+    });
+  
+    try {
+      const response = await axios.post('/api/get-audio-file', {
+        text: script
+      });
+  
+      if (response.status === 200) {
+        console.log('Audio file created and saved:', response.data.filePath);
+      } else {
+        console.log('Failed to create audio file');
+      }
+    } catch (error) {
+      console.error('Error creating audio file:', error);
+    }
+  };
+  
   return (
     <div className='md:px-20' >
 
