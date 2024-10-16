@@ -7,7 +7,8 @@ import SelectStyle from './_components/selected-style'
 import SelectDuration from './_components/select-duration'
 import CustomLoading from './_components/custom-loading'
 import axios from 'axios'
-// import { v4 as uuidv4 } from 'uuid';
+
+import { v4 as uuidv4 } from 'uuid';
 
 const CreateNew = () => {
 
@@ -96,6 +97,7 @@ const CreateNew = () => {
   // }
   const createAudioFile = async (videoScript) => {
     let script = '';
+    const id = uuidv4 ()
   
     videoScript.forEach(item => {
       script += item.contentText + ' ';
@@ -103,7 +105,8 @@ const CreateNew = () => {
   
     try {
       const response = await axios.post('/api/get-audio-file', {
-        text: script
+        text: script,
+        id : id
       });
   
       if (response.status === 200) {

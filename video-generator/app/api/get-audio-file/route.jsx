@@ -1,10 +1,12 @@
 import { join } from 'path';
 import fs from 'fs';
 import gTTS from 'gtts';
+import { ref } from 'firebase/storage';
 
 export async function POST(req) {
   try {
-    const { text } = await req.json(); // Get the text from the request body
+    const { text,id } = await req.json(); // Get the text from the request body
+    const stoRef = ref(storage, 'short-video-files/'+id+'audio.mp3');
 
     if (!text) {
       return new Response(JSON.stringify({ message: 'No text provided' }), { status: 400 });
