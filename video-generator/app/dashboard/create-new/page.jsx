@@ -1,6 +1,3 @@
-
-
-
 'use client'
 import React, { useState, useEffect } from 'react';
 import SelectTopic from './_components/select-topic';
@@ -149,25 +146,30 @@ const CreateNew = () => {
   //     setLoading(false);
   // }
   const getImages = async () => {
-    let images = [];
-    const promises = tempImages.map(ele => {
-        return axios.post('/api/generate-image', {
-            prompt: ele?.imagePrompt
-        }).then(resp => {
-            console.log('API response:', resp.data.res);
-            return resp.data.res;
-        }).catch(err => {
-            console.error('Error during image generation:', err);  // Log the error
-            return null;  // Or handle the error differently
+    let images = await Promise.all(tempImages.map(async (ele) => {
+      try {
+        const resp = await axios.post('/api/generate-image', {
+          prompt: ele?.imagePrompt
         });
-    });
-
-    images = await Promise.all(promises);
-    console.log('Generated images:', images);
-    
-    setImageLists(images.filter(img => img !== null));  // Filter out failed requests
-    setLoading(false);
-};
+        return resp.data.res; // Return the image URL from the API response
+      } catch (error) {
+        console.error('Error fetching image:', error);
+        return null; // Handle errors appropriately
+      }
+    }));
+  
+    // Filter out any null values if there were errors
+    images = images.filter(image => image !== null);
+  
+    console.log('Images:', images);
+  
+    setImageLists(images); // Set images in the state
+  
+    setLoading(false); // Set loading state
+  };
+  
+  
+  
 
   return (
     <div className='md:px-20'>

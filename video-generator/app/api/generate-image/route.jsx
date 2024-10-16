@@ -1,5 +1,5 @@
 import Replicate from "replicate";
-import { NextResponse } from "next/server";
+// import { NextResponse } from "next/server";
 
 // export async function POST(req) {
 // try{
@@ -30,50 +30,106 @@ import { NextResponse } from "next/server";
 // }
 
 // }
+
+
+// export async function POST(req) {
+//     try {
+//         const { prompt } = await req.json();
+//         console.log('Received prompt:', prompt);
+
+//         const replicate = new Replicate({
+//             auth: process.env.RAPLICATE_API_TOKEN
+//         });
+
+//         console.log('Replicate client initialized:', replicate);
+
+//         const input = {
+//             prompt: prompt,
+//             height: 1280,   // Fixed typo: heigth -> height
+//             width: 1024,
+//             num_outputs: 1
+//         };
+
+//         console.log('Input for Replicate:', input);
+
+//         const output = await replicate.run("aleksa-codes/flux-ghibsky-illustration:a9f94946fa0377091ac0bcfe61b0d62ad9a85224e4b421b677d4747914b908c0", { input });
+
+//         console.log('Replicate output:', output);  // Log the output here
+
+//         if (output && output.length > 0) {
+//             return NextResponse.json({
+//                 status: 200,
+//                 res: output[0]
+//             });
+//         } else {
+//             console.error('No output generated from Replicate');
+//             return NextResponse.json({
+//                 status: 500,
+//                 message: 'No image generated'
+//             });
+//         }
+
+//     } catch (err) {
+//         console.error('Error in POST route:', err);
+//         return NextResponse.json({
+//             status: 500,
+//             message: 'Internal Server Error',
+//             error: err.message || 'No error message available',
+//             stack: err.stack || 'No stack trace available'
+//         });
+//     }
+// }
+import { NextResponse } from 'next/server';
+import axios from 'axios';
+
 export async function POST(req) {
     try {
         const { prompt } = await req.json();
         console.log('Received prompt:', prompt);
 
-        const replicate = new Replicate({
-            auth: process.env.RAPLICATE_API_TOKEN
-        });
+        // Call the function to generate the image from the prompt
+        const output = await generateImageFromPrompt(prompt);
 
-        console.log('Replicate client initialized:', replicate);
+        console.log('Generated image output:', output); // Log the entire output
 
-        const input = {
-            prompt: prompt,
-            height: 1280,   // Fixed typo: heigth -> height
-            width: 1024,
-            num_outputs: 1
-        };
-
-        console.log('Input for Replicate:', input);
-
-        const output = await replicate.run("aleksa-codes/flux-ghibsky-illustration:a9f94946fa0377091ac0bcfe61b0d62ad9a85224e4b421b677d4747914b908c0", { input });
-
-        console.log('Replicate output:', output);  // Log the output here
-
-        if (output && output.length > 0) {
-            return NextResponse.json({
-                status: 200,
-                res: output[0]
+        // Log the image URLs
+        if (output && output.images) {
+            output.images.forEach((image, index) => {
+                console.log(`Generated image URL ${index + 1}:`, image);
             });
         } else {
-            console.error('No output generated from Replicate');
-            return NextResponse.json({
-                status: 500,
-                message: 'No image generated'
-            });
+            console.error('No image URLs returned from image generation');
         }
 
+        return NextResponse.json({
+            status: 200,
+            res: output,
+        });
     } catch (err) {
         console.error('Error in POST route:', err);
         return NextResponse.json({
             status: 500,
             message: 'Internal Server Error',
             error: err.message || 'No error message available',
-            stack: err.stack || 'No stack trace available'
         });
+    }
+}
+
+// Function to call Craiyon API and get images based on prompt
+async function generateImageFromPrompt(prompt) {
+    try {
+        const response = await axios.post('https://api.craiyon.com/generate', {
+            prompt: prompt,
+        });
+
+        // The API returns images as an array in response.data.images
+        return {
+            images: response.data.images, // Array of image URLs
+        };
+    } catch (error) {
+        console.error('Error generating image from prompt:', error);
+        return {
+            images: [],
+        };
     }
 }
