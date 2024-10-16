@@ -11,9 +11,17 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 const fileTempUrl = 'https://firebasestorage.googleapis.com/v0/b/video-generator-5a9a4.appspot.com/o/short-video-files%2F5f679536-4f9c-42e8-9f04-60b03837aff2.mp3?alt=media&token=1029423c-ef6e-4911-851e-71c552a81fff'
-const tempImages = [{
- 
-}]
+const tempImages = [
+  {
+    "imagePrompt": "A tranquil mountain lake reflecting towering pine trees and distant snow-capped peaks. The water is so clear that the mountains are mirrored perfectly, and a few colorful wildflowers bloom at the shoreline. The sky is bright, with soft clouds scattered across it, casting gentle shadows over the landscape.",
+    "textContext": "This image evokes a sense of serenity and natural beauty, with the pristine reflection on the lake symbolizing calmness and clarity. The distant peaks and the vibrant wildflowers represent balance and the coexistence of strength and delicacy in nature."
+  },
+  {
+    "imagePrompt": "A vibrant, futuristic cityscape at night, with neon lights glowing in hues of purple, pink, and blue. Tall, sleek skyscrapers dominate the skyline, some with floating platforms and flying cars zooming between them. The streets below are alive with holographic advertisements, robotic vendors, and people in high-tech clothing, walking past advanced gadgets and futuristic market stalls.",
+    "textContext": "This image conveys a dynamic, high-tech urban future, symbolizing innovation and human progress. The interplay of neon lights and advanced technology highlights the fusion of design and function, while the bustling scene reflects a city constantly on the move."
+  }
+]
+
 
 const CreateNew = () => {
   const [formData, setFormData] = useState({});
@@ -42,8 +50,9 @@ const CreateNew = () => {
 
   const onClickButtonHandler = () => {
     // getVideoScript();
-    getAudioCaption(fileTempUrl)
-  };
+    // getAudioCaption(fileTempUrl)
+    getImages()
+   };
 
   const tempHandle = () => {
     if (!videoScript || videoScript.length === 0) {
@@ -123,22 +132,43 @@ const CreateNew = () => {
      
   }
 
-  const getImages=async() =>{
-      let images=[];
-      videoScript.forEach(async(ele)=>{
-        await axios.post('/api/generate-image',{
-            prompt : ele?.imagePrompt
-        }).then(resp=>{
-          console.log(resp.data.res);
-          images.push(resp.data.res);
-        })
-      })
-      console.log(images);
+  // const getImages=() =>{
+  //     let images=[];
+  //     tempImages.forEach(async(ele)=>{
+  //       await axios.post('/api/generate-image',{
+  //           prompt : ele?.imagePrompt
+  //       }).then(resp=>{
+  //         console.log(resp.data.res);
+  //         images.push(resp.data.res);
+  //       })
+  //     })
+  //     console.log(images);
       
-      setImageLists(images);
+  //     setImageLists(images);
 
-      setLoading(false);
-  }
+  //     setLoading(false);
+  // }
+  const getImages = async () => {
+    let images = [];
+    const promises = tempImages.map(ele => {
+        return axios.post('/api/generate-image', {
+            prompt: ele?.imagePrompt
+        }).then(resp => {
+            console.log('API response:', resp.data.res);
+            return resp.data.res;
+        }).catch(err => {
+            console.error('Error during image generation:', err);  // Log the error
+            return null;  // Or handle the error differently
+        });
+    });
+
+    images = await Promise.all(promises);
+    console.log('Generated images:', images);
+    
+    setImageLists(images.filter(img => img !== null));  // Filter out failed requests
+    setLoading(false);
+};
+
   return (
     <div className='md:px-20'>
       <h2 className='font-bold text-4xl text-blue-800 text-center'>Create New</h2>
