@@ -11,12 +11,19 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 const fileTempUrl = 'https://firebasestorage.googleapis.com/v0/b/video-generator-5a9a4.appspot.com/o/short-video-files%2F5f679536-4f9c-42e8-9f04-60b03837aff2.mp3?alt=media&token=1029423c-ef6e-4911-851e-71c552a81fff'
+const tempImages = [{
+ 
+}]
+
 const CreateNew = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [videoScript, setVideoScript] = useState([]);
   const [voices, setVoices] = useState([]);
   const [audioFileUrl , setAudioFileUrl] = useState();
+  const [caption, setCaption] = useState();
+  const [imageLists , setImageLists] = useState();
+
   
 
   useEffect(() => {
@@ -92,6 +99,7 @@ const CreateNew = () => {
       if (response.status === 200) {
         console.log('Audio file created and saved:', response.data.filePath);
         setAudioFileUrl(response.data.filePath)
+        response.data.filePath&&getAudioCaption(res.data.filePath)
       } else {
         console.log('Failed to create audio file');
       }
@@ -102,14 +110,34 @@ const CreateNew = () => {
 
   const getAudioCaption=async(filePath)=>{
     setLoading(true);
+
     await axios.post('/api/get-caption-file', {
       audioFileUrl: filePath
     }).then((res)=>{
       console.log(res.data.res);
+      setCaption(res?.data?.res);
     })
     setLoading(false);
     
-        
+    console.log();
+     
+  }
+
+  const getImages=async() =>{
+      let images=[];
+      videoScript.forEach(async(ele)=>{
+        await axios.post('/api/generate-image',{
+            prompt : ele?.imagePrompt
+        }).then(resp=>{
+          console.log(resp.data.res);
+          images.push(resp.data.res);
+        })
+      })
+      console.log(images);
+      
+      setImageLists(images);
+
+      setLoading(false);
   }
   return (
     <div className='md:px-20'>
