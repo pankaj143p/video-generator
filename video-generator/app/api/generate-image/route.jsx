@@ -79,57 +79,35 @@ import Replicate from "replicate";
 //         });
 //     }
 // }
-import { NextResponse } from 'next/server';
-import axios from 'axios';
+import { OpenAI } from "openai";
+import { NextResponse } from "next/server";
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // Ensure this is set in your .env file
+});
 
 export async function POST(req) {
-    try {
-        const { prompt } = await req.json();
-        console.log('Received prompt:', prompt);
+  try {
+    // Parse the request body to get the prompt
+    const { prompt } = await req.json();
 
-        // Call the function to generate the image from the prompt
-        const output = await generateImageFromPrompt(prompt);
+    // Call OpenAI's image generation API
+    const response = await openai.images.generate({
+      prompt: prompt,
+      n: 1, // Number of images to generate
+      size: "1024x1024", // Specify the image size
+    });
 
-        console.log('Generated image output:', output); // Log the entire output
-
-        // Log the image URLs
-        if (output && output.images) {
-            output.images.forEach((image, index) => {
-                console.log(`Generated image URL ${index + 1}:`, image);
-            });
-        } else {
-            console.error('No image URLs returned from image generation');
-        }
-
-        return NextResponse.json({
-            status: 200,
-            res: output,
-        });
-    } catch (err) {
-        console.error('Error in POST route:', err);
-        return NextResponse.json({
-            status: 500,
-            message: 'Internal Server Error',
-            error: err.message || 'No error message available',
-        });
-    }
-}
-
-// Function to call Craiyon API and get images based on prompt
-async function generateImageFromPrompt(prompt) {
-    try {
-        const response = await axios.post('https://api.craiyon.com/generate', {
-            prompt: prompt,
-        });
-
-        // The API returns images as an array in response.data.images
-        return {
-            images: response.data.images, // Array of image URLs
-        };
-    } catch (error) {
-        console.error('Error generating image from prompt:', error);
-        return {
-            images: [],
-        };
-    }
+    // Return the generated image URL in the response
+    return NextResponse.json({
+      status: 200,
+      res: response.data[0].url, // Assuming the URL is in response.data[0].url
+    });
+  } catch (err) {
+    // Handle any errors
+    return NextResponse.json({
+      status: 500,
+      error: err.message,
+    });
+  }
 }

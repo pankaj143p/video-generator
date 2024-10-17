@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.1",
+    "@fal-ai/client": "^1.0.2",
     "@google-cloud/text-to-speech": "^5.5.0",
     "@google/generative-ai": "^0.21.0",
     "@neondatabase/serverless": "^0.9.5",
@@ -31,6 +32,7 @@
     "monsterapi": "^0.0.5",
     "next": "14.2.14",
     "node-fetch": "^3.3.2",
+    "openai": "^4.67.3",
     "playht": "^0.9.9-alpha.5",
     "react": "^18",
     "react-dom": "^18",
