@@ -8,7 +8,8 @@
     "start": "next start",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-readme": "node generateReadme.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.1",
