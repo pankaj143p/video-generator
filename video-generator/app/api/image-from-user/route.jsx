@@ -23,7 +23,7 @@ export async function POST(req) {
         const buffer = Buffer.from(arrayBuffer);
 
         // Upload to Firebase
-        const storageRef = ref(storage, `short-video-files/${id}.jpg`);
+        const storageRef = ref(storage, `short-video-files/${id}.png`);
         await uploadBytes(storageRef, buffer, { contentType: image.type });
 
         return new Response(JSON.stringify({ message: 'Image uploaded successfully', id }), { status: 200 });

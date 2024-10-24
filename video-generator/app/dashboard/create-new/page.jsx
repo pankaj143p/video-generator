@@ -1,5 +1,3 @@
-
-
 'use client'
 import React, { useState, useEffect } from 'react';
 import SelectTopic from './_components/select-topic';
@@ -20,9 +18,10 @@ const CreateNew = () => {
   const [audioFileUrl, setAudioFileUrl] = useState();
   const [caption, setCaption] = useState();
   const [imageLists, setImageLists] = useState([]);
-  
-  // New state for uploaded image URLs
+
+  // State for uploaded images
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [currentImage, setCurrentImage] = useState(null); // State to store current uploaded image URL
 
   useEffect(() => {
     const populateVoices = () => {
@@ -39,6 +38,9 @@ const CreateNew = () => {
   };
 
   const onClickButtonHandler = async() => {
+    if (currentImage) {
+      handleImageUpload(currentImage); // Call handleImageUpload with the current image
+    }
     getVideoScript();
     getAudioCaption(fileTempUrl);
   };
@@ -121,6 +123,32 @@ const CreateNew = () => {
     setUploadedImages(prevImages => [...prevImages, url]);
   };
 
+  // Function to handle image upload directly
+  const handleImageSelect = async (file) => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch('/api/image-from-user', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        const url = `https://storage.googleapis.com/YOUR-FIREBASE-BUCKET/uploaded-images/${file.name}`; // Adjust this as needed
+        setCurrentImage(url);
+        handleImageUpload(url); // Call handleImageUpload to store the image URL
+      } else {
+        console.error(result.message || 'Error uploading image');
+      }
+    } catch (err) {
+      console.error('Error while uploading the file:', err);
+    }
+  };
+
   return (
     <div className='md:px-20'>
       <h2 className='font-bold text-4xl text-blue-800 text-center'>Create New</h2>
@@ -129,8 +157,8 @@ const CreateNew = () => {
         <SelectStyle onUserSelect={onHandleInputChange} />
         <SelectDuration onUserSelect={onHandleInputChange} />
         
-        {/* Pass the handleImageUpload function to ImageTest */}
-        <ImageTest onImageUpload={handleImageUpload} />
+        {/* Pass the handleImageSelect to ImageTest */}
+        <ImageTest onImageSelect={handleImageSelect} />
         
         <div className='mt-10'>
           <button className='bg-teal-700 hover:bg-slate-900 text-white p-3 rounded-lg w-full' onClick={onClickButtonHandler}>Create New Video</button>
