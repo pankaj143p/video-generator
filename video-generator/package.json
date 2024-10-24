@@ -31,6 +31,7 @@
     "fs": "^0.0.1-security",
     "lucide-react": "^0.447.0",
     "monsterapi": "^0.0.5",
+    "multer": "^1.4.5-lts.1",
     "next": "14.2.14",
     "node-fetch": "^3.3.2",
     "openai": "^4.67.3",
