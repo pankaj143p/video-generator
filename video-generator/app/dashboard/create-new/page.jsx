@@ -6,6 +6,7 @@ import SelectDuration from './_components/select-duration';
 import CustomLoading from './_components/custom-loading';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import ImageTest from './_components/test-image';
 
 const fileTempUrl = 'https://firebasestorage.googleapis.com/v0/b/video-generator-5a9a4.appspot.com/o/short-video-files%2F5f679536-4f9c-42e8-9f04-60b03837aff2.mp3?alt=media&token=1029423c-ef6e-4911-851e-71c552a81fff'
 const tempImages = [
@@ -196,6 +197,7 @@ const CreateNew = () => {
         <SelectTopic onUserSelect={onHandleInputChange} />
         <SelectStyle onUserSelect={onHandleInputChange} />
         <SelectDuration onUserSelect={onHandleInputChange} />
+        <ImageTest/>
         <div className='mt-10'>
           <button className='bg-teal-700 hover:bg-slate-900 text-white p-3 rounded-lg w-full' onClick={onClickButtonHandler}>Create New Video</button>
         </div>
