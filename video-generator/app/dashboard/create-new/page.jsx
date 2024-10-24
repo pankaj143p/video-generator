@@ -46,12 +46,12 @@ const CreateNew = () => {
   };
 
   const  onClickButtonHandler = async() => {
-    // getVideoScript();
-    // getAudioCaption(fileTempUrl)
+    getVideoScript();
+    getAudioCaption(fileTempUrl)
     // getImages()
-    const prompt = "A futuristic cityscape with flying cars"; // Example prompt
-    const imageUrl = await generateImage(prompt);
-    console.log("Generated Image URL:", imageUrl);
+    // const prompt = "A futuristic cityscape with flying cars"; // Example prompt
+    // const imageUrl = await generateImage(prompt);
+    // console.log("Generated Image URL:", imageUrl);
    };
 
   const tempHandle = () => {
@@ -148,33 +148,33 @@ const CreateNew = () => {
 
   //     setLoading(false);
   // }
-  const getImages = async () => {
-    setLoading(true);  // Set loading state at the start
-    let images = await Promise.all(tempImages.map(async (ele) => {
-      try {
-        const resp = await axios.post('/api/generate-image', {
-          prompt: ele?.imagePrompt
-        });
+  // const getImages = async () => {
+  //   setLoading(true);  // Set loading state at the start
+  //   let images = await Promise.all(tempImages.map(async (ele) => {
+  //     try {
+  //       const resp = await axios.post('/api/generate-image', {
+  //         prompt: ele?.imagePrompt
+  //       });
         
-        console.log("API Response:", resp.data);  // Log the response
+  //       console.log("API Response:", resp.data);  // Log the response
         
-        // Adjust this based on what the API actually returns
-        return resp.data.res || resp.data.data?.url;  // Assuming image URL is in this structure
-      } catch (error) {
-        console.error('Error fetching image:', error);
-        return null;  // Handle errors appropriately
-      }
-    }));
+  //       // Adjust this based on what the API actually returns
+  //       return resp.data.res || resp.data.data?.url;  // Assuming image URL is in this structure
+  //     } catch (error) {
+  //       console.error('Error fetching image:', error);
+  //       return null;  // Handle errors appropriately
+  //     }
+  //   }));
   
-    // Filter out any null values if there were errors
-    images = images.filter(image => image !== null);
+  //   // Filter out any null values if there were errors
+  //   images = images.filter(image => image !== null);
   
-    console.log('Generated Images:', images);  // Log the final list of images
+  //   console.log('Generated Images:', images);  // Log the final list of images
   
-    setImageLists(images);  // Set images in the state
+  //   setImageLists(images);  // Set images in the state
   
-    setLoading(false);  // Set loading state
-  };
+  //   setLoading(false);  // Set loading state
+  // };
   
   
   const generateImage = async (prompt) => {
