@@ -23,7 +23,7 @@
 import { ref, uploadBytes } from 'firebase/storage';
 import gTTS from 'gtts';
 import fs from 'fs';
-import { storage } from '@/configs/firebaseConfig'; 
+import { storage } from '../../../configs/firebaseConfig'; 
 import { join } from 'path'; 
 
 export async function POST(req) {

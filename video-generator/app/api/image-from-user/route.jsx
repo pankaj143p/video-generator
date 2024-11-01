@@ -1,5 +1,5 @@
 import { ref, uploadBytes } from 'firebase/storage';
-import { storage } from '@/configs/firebaseConfig'; 
+import { storage } from '../../../configs/firebaseConfig'; 
 import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
 
 export async function POST(req) {
