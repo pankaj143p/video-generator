@@ -7,7 +7,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "../../../../components/ui/select"
 const SelectDuration = ({onUserSelect}) => {
   return (
     <div className='mt-10'>

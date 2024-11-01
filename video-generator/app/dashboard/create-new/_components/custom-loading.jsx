@@ -4,7 +4,7 @@ import {
     AlertDialog,
     AlertDialogContent,
     
-} from "@/components/ui/alert-dialog"
+} from "../../../../components/ui/alert-dialog"
 
 function LoadingEffect({loading}) {
     return (

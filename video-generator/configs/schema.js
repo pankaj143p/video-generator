@@ -21,3 +21,12 @@ export const Users = pgTable("users", {
    imageUrl: varchar('imageUrl', 200),
    subscription: boolean('subscription').default(false),
 });
+
+export const VideoData = pgTable("videoData", {
+   id: serial('id').primaryKey(),
+   script: varchar('script', 200).notNull(),
+   audioFileUrl: varchar('audioFileUrl', 200).notNull(),
+   caption: varchar('caption', 200).notNull(),
+   imageList : varchar('imageList', 200).array(),
+   createdBy: varchar('createdBy', 200).notNull(),
+});

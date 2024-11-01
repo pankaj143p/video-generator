@@ -1,8 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import { Button } from '../../components/ui/button';
 import { UserButton } from '@clerk/nextjs';
-import logo from '@/public/logo.svg';
+import logo from '../../public/logo.svg';
 
 const Header = () => {
   return (

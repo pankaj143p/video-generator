@@ -1,6 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import Provider from '@/app/provider'
+import Provider from '../app/provider'
 import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = localFont({

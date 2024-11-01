@@ -1,6 +1,6 @@
 "use client"
 
-import { db } from '@/configs/db';
+import { db } from '../configs/db';
 import { Users } from '../configs/schema';
 import { useUser } from '@clerk/nextjs';
 import { eq } from 'drizzle-orm';

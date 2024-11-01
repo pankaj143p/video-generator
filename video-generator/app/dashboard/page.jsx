@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
-import {Button} from '@/components/ui/button'
-import EmptyState from '@/app/_components/emptystate'
+import {Button} from '../../components/ui/button'
+import EmptyState from '../_components/emptystate'
 import Link from 'next/link'
 function Dashboard(){
     const [videoList, setVideoList] = useState([]);

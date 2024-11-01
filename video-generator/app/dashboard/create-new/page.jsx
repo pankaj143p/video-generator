@@ -149,6 +149,9 @@ const CreateNew = () => {
     }
   };
 
+
+
+
   return (
     <div className='md:px-20'>
       <h2 className='font-bold text-4xl text-blue-800 text-center'>Create New</h2>

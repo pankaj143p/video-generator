@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StypeOptions } from '@/Data/styleoptions'
+import { StypeOptions } from '../../../../Data/styleoptions'
 import Image from 'next/image'
 
 const SelectStyle = ({onUserSelect}) => {
