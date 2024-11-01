@@ -7,6 +7,8 @@ import CustomLoading from './_components/custom-loading';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import ImageTest from './_components/test-image';
+import { useContext } from 'react';
+import { VideoDataContext } from '../../context/video-data-context';
 
 const fileTempUrl = 'https://firebasestorage.googleapis.com/v0/b/video-generator-5a9a4.appspot.com/o/short-video-files%2F5f679536-4f9c-42e8-9f04-60b03837aff2.mp3?alt=media&token=1029423c-ef6e-4911-851e-71c552a81fff';
 
@@ -18,6 +20,8 @@ const CreateNew = () => {
   const [audioFileUrl, setAudioFileUrl] = useState();
   const [caption, setCaption] = useState();
   const [imageLists, setImageLists] = useState([]);
+  // const [videoData, setVideoData] = useState([]);
+  const {videoData, setVideoData} = useContext(VideoDataContext);
 
   // State for uploaded images
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -72,7 +76,12 @@ const CreateNew = () => {
     
     try {
       const res = await axios.post('/api/get-video-script', { prompt });
+
       console.log(res.data.res);
+      setVideoData(prev => ({
+        ...prev,
+        'videoScript': res.data.res,
+      }));
       setVideoScript(res.data.res);
 
       const id = uuidv4();
@@ -97,6 +106,10 @@ const CreateNew = () => {
 
       if (response.status === 200) {
         console.log('Audio file created and saved:', response.data.filePath);
+        setVideoData(prev => ({
+          ...prev,
+          'audioFileUrl': response.data.filePath,
+        }));
         setAudioFileUrl(response.data.filePath);
         response.data.filePath && getAudioCaption(res.data.filePath);
       } else {
@@ -112,18 +125,61 @@ const CreateNew = () => {
     await axios.post('/api/get-caption-file', {
       audioFileUrl: filePath
     }).then((res) => {
-      console.log(res.data.res);
+      
+      setVideoData(prev => ({
+        ...prev,
+        'caption': res?.data?.res,
+      }));
       setCaption(res?.data?.res);
     });
     setLoading(false);
   };
 
   // Function to update uploaded images state
+  // const handleImageUpload = (url) => {
+  //   setVideoData(prev => ({
+  //     ...prev,
+  //     'imageUrls': [...prev.imageUrls, url],
+  //   }));
+  //   setUploadedImages(prevImages => [...prevImages, url]);
+  // };
+
+  // // Function to handle image upload directly
+  // const handleImageSelect = async (file) => {
+  //   if (!file) return;
+
+  //   const formData = new FormData();
+  //   formData.append('image', file);
+
+  //   try {
+  //     const response = await fetch('/api/image-from-user', {
+  //       method: 'POST',
+  //       body: formData,
+  //     });
+
+  //     const result = await response.json();
+  //     if (response.ok) {
+  //       const url = `https://storage.googleapis.com/YOUR-FIREBASE-BUCKET/uploaded-images/${file.name}`; // Adjust this as needed
+       
+  //       setCurrentImage(url);
+  //       handleImageUpload(url); // Call handleImageUpload to store the image URL
+  //     } else {
+  //       console.error(result.message || 'Error uploading image');
+  //     }
+  //   } catch (err) {
+  //     console.error('Error while uploading the file:', err);
+  //   }
+  // };
+
+
   const handleImageUpload = (url) => {
+    setVideoData(prev => ({
+      ...prev,
+      imageUrls: [...(prev.imageUrls || []), url], // Ensure imageUrls is an array and update with new URL
+    }));
     setUploadedImages(prevImages => [...prevImages, url]);
   };
 
-  // Function to handle image upload directly
   const handleImageSelect = async (file) => {
     if (!file) return;
 
@@ -138,9 +194,9 @@ const CreateNew = () => {
 
       const result = await response.json();
       if (response.ok) {
-        const url = `https://storage.googleapis.com/YOUR-FIREBASE-BUCKET/uploaded-images/${file.name}`; // Adjust this as needed
+        const url = `https://storage.googleapis.com/YOUR-FIREBASE-BUCKET/uploaded-images/${file.name}`;
         setCurrentImage(url);
-        handleImageUpload(url); // Call handleImageUpload to store the image URL
+        handleImageUpload(url);  // Store the image URL
       } else {
         console.error(result.message || 'Error uploading image');
       }
@@ -148,8 +204,9 @@ const CreateNew = () => {
       console.error('Error while uploading the file:', err);
     }
   };
-
-
+  useEffect(() => {
+    console.log('videoData:', videoData);
+  }, [videoData]);
 
 
   return (
