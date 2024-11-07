@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import SelectTopic from './_components/select-topic';
 import SelectStyle from './_components/selected-style';
 import SelectDuration from './_components/select-duration';
@@ -7,8 +7,10 @@ import CustomLoading from './_components/custom-loading';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import ImageTest from './_components/test-image';
-import { useContext } from 'react';
 import { VideoDataContext } from '../../context/video-data-context';
+import { useUser } from '@clerk/nextjs';
+import { VideoData } from '../../../configs/schema';
+import { db } from '../../../configs/db';
 
 const fileTempUrl = 'https://firebasestorage.googleapis.com/v0/b/video-generator-5a9a4.appspot.com/o/short-video-files%2F5f679536-4f9c-42e8-9f04-60b03837aff2.mp3?alt=media&token=1029423c-ef6e-4911-851e-71c552a81fff';
 
@@ -17,22 +19,18 @@ const CreateNew = () => {
   const [loading, setLoading] = useState(false);
   const [videoScript, setVideoScript] = useState([]);
   const [voices, setVoices] = useState([]);
-  const [audioFileUrl, setAudioFileUrl] = useState();
-  const [caption, setCaption] = useState();
-  const [imageLists, setImageLists] = useState([]);
-  // const [videoData, setVideoData] = useState([]);
-  const {videoData, setVideoData} = useContext(VideoDataContext);
-
-  // State for uploaded images
+  const [audioFileUrl, setAudioFileUrl] = useState('');
+  const [caption, setCaption] = useState('');
   const [uploadedImages, setUploadedImages] = useState([]);
-  const [currentImage, setCurrentImage] = useState(null); // State to store current uploaded image URL
+  const [currentImage, setCurrentImage] = useState(null);
+  const { videoData, setVideoData } = useContext(VideoDataContext);
+  const user = useUser();
 
   useEffect(() => {
     const populateVoices = () => {
       const availableVoices = window.speechSynthesis.getVoices();
       setVoices(availableVoices);
     };
-
     populateVoices();
     window.speechSynthesis.onvoiceschanged = populateVoices;
   }, []);
@@ -41,49 +39,24 @@ const CreateNew = () => {
     setFormData(prev => ({ ...prev, [fieldName]: fieldValue }));
   };
 
-  const onClickButtonHandler = async() => {
-    if (currentImage) {
-      handleImageUpload(currentImage); // Call handleImageUpload with the current image
-    }
-    getVideoScript();
-    getAudioCaption(fileTempUrl);
-  };
-
-  const tempHandle = () => {
-    if (!videoScript || videoScript.length === 0) {
-      console.log("No video script available");
-      return;
-    }
-
-    const text = videoScript.map(scene => scene.contentText).join(' ');
-    const utterance = new SpeechSynthesisUtterance(text);
-    const femaleVoice = voices.find(voice => voice.name.includes('Female') || voice.lang.includes('en'));
-
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
-    }
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const stopSpeech = () => {
-    window.speechSynthesis.cancel();
-    console.log("Speech stopped.");
+  const onClickButtonHandler = async () => {
+    if (currentImage) handleImageUpload(currentImage);
+    await getVideoScript();
   };
 
   const getVideoScript = async () => {
     setLoading(true);
     const prompt = `Write a script to generate ${formData.duration} video on topic: ${formData.topic} with AI image prompt in ${formData.imagestyle} format for each scene and give me result in JSON format with imagePrompt and content Text as field`;
-    
+
     try {
       const res = await axios.post('/api/get-video-script', { prompt });
-
-      console.log(res.data.res);
+      console.log("Video Script Response:", res.data.res);
+      setVideoScript(res.data.res);
       setVideoData(prev => ({
         ...prev,
-        'videoScript': res.data.res,
+        videoScript: res.data.res,
       }));
-      setVideoScript(res.data.res);
-
+      
       const id = uuidv4();
       await createAudioFile(res.data.res, id);
     } catch (error) {
@@ -94,9 +67,7 @@ const CreateNew = () => {
   };
 
   const createAudioFile = async (videoScript, id) => {
-    let script = videoScript.map(item => item.contentText).join(' ');
-
-    console.log('Payload for audio file creation:', { text: script, id });
+    const script = videoScript.map(item => item.contentText).join(' ');
 
     try {
       const response = await axios.post('/api/get-audio-file', {
@@ -106,12 +77,8 @@ const CreateNew = () => {
 
       if (response.status === 200) {
         console.log('Audio file created and saved:', response.data.filePath);
-        setVideoData(prev => ({
-          ...prev,
-          'audioFileUrl': response.data.filePath,
-        }));
         setAudioFileUrl(response.data.filePath);
-        response.data.filePath && getAudioCaption(res.data.filePath);
+        await getAudioCaption(response.data.filePath, videoScript);
       } else {
         console.log('Failed to create audio file');
       }
@@ -120,62 +87,29 @@ const CreateNew = () => {
     }
   };
 
-  const getAudioCaption = async(filePath) => {
+  const getAudioCaption = async (filePath, videoScript) => {
     setLoading(true);
-    await axios.post('/api/get-caption-file', {
-      audioFileUrl: filePath
-    }).then((res) => {
-      
+
+    try {
+      const res = await axios.post('/api/get-caption-file', { audioFileUrl: filePath });
+      console.log('Caption File Path:', res.data.filePath);
+      setCaption(res.data.filePath);
       setVideoData(prev => ({
         ...prev,
-        'caption': res?.data?.res,
+        caption: res.data.filePath,
+        audioFileUrl: filePath,
       }));
-      setCaption(res?.data?.res);
-    });
-    setLoading(false);
+    } catch (error) {
+      console.error("Error fetching caption:", error);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  // Function to update uploaded images state
-  // const handleImageUpload = (url) => {
-  //   setVideoData(prev => ({
-  //     ...prev,
-  //     'imageUrls': [...prev.imageUrls, url],
-  //   }));
-  //   setUploadedImages(prevImages => [...prevImages, url]);
-  // };
-
-  // // Function to handle image upload directly
-  // const handleImageSelect = async (file) => {
-  //   if (!file) return;
-
-  //   const formData = new FormData();
-  //   formData.append('image', file);
-
-  //   try {
-  //     const response = await fetch('/api/image-from-user', {
-  //       method: 'POST',
-  //       body: formData,
-  //     });
-
-  //     const result = await response.json();
-  //     if (response.ok) {
-  //       const url = `https://storage.googleapis.com/YOUR-FIREBASE-BUCKET/uploaded-images/${file.name}`; // Adjust this as needed
-       
-  //       setCurrentImage(url);
-  //       handleImageUpload(url); // Call handleImageUpload to store the image URL
-  //     } else {
-  //       console.error(result.message || 'Error uploading image');
-  //     }
-  //   } catch (err) {
-  //     console.error('Error while uploading the file:', err);
-  //   }
-  // };
-
 
   const handleImageUpload = (url) => {
     setVideoData(prev => ({
       ...prev,
-      imageUrls: [...(prev.imageUrls || []), url], // Ensure imageUrls is an array and update with new URL
+      imageUrls: [...(prev.imageUrls || []), url],
     }));
     setUploadedImages(prevImages => [...prevImages, url]);
   };
@@ -196,7 +130,7 @@ const CreateNew = () => {
       if (response.ok) {
         const url = `https://storage.googleapis.com/YOUR-FIREBASE-BUCKET/uploaded-images/${file.name}`;
         setCurrentImage(url);
-        handleImageUpload(url);  // Store the image URL
+        handleImageUpload(url);
       } else {
         console.error(result.message || 'Error uploading image');
       }
@@ -204,10 +138,32 @@ const CreateNew = () => {
       console.error('Error while uploading the file:', err);
     }
   };
+
   useEffect(() => {
-    console.log('videoData:', videoData);
+    console.log('Updated videoData:', videoData);
+    if (Object.keys(videoData).length > 0) {
+      saveVideoData(videoData);
+    }
   }, [videoData]);
 
+  const saveVideoData = async (videoData) => {
+    setLoading(true);
+    try {
+      const res = await db.insert(VideoData).values({
+        script: videoData.videoScript,
+        audioFileUrl: videoData.audioFileUrl,
+        caption: videoData.caption,
+        imageUrls: videoData.imageUrls,
+        createdBy: user?.primaryEmailAddress?.emailAddress,
+      }).returning({ id: VideoData.id });
+      console.log('Database insertion result:', res);
+    } catch (error) {
+      console.error('Error inserting data into the database:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <div className='md:px-20'>
@@ -216,21 +172,14 @@ const CreateNew = () => {
         <SelectTopic onUserSelect={onHandleInputChange} />
         <SelectStyle onUserSelect={onHandleInputChange} />
         <SelectDuration onUserSelect={onHandleInputChange} />
-        
-        {/* Pass the handleImageSelect to ImageTest */}
         <ImageTest onImageSelect={handleImageSelect} />
         
         <div className='mt-10'>
           <button className='bg-teal-700 hover:bg-slate-900 text-white p-3 rounded-lg w-full' onClick={onClickButtonHandler}>Create New Video</button>
         </div>
-        <div className='mt-5 flex space-x-2'>
-          <button onClick={tempHandle}>Start Speech</button>
-          <button onClick={stopSpeech}>Stop Speech</button>
-        </div>
       </div>
       <CustomLoading loading={loading} />
-      
-      {/* Display uploaded images */}
+
       <div className='mt-10'>
         <h3 className='text-xl font-bold'>Uploaded Images:</h3>
         <div className='flex flex-wrap'>
